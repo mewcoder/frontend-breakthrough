@@ -1,0 +1,37 @@
+name: Update README with Issues
+
+on:
+  issues:
+    types: [opened, closed, reopened]
+
+permissions:
+  contents: write
+  issues: read
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      
+      - name: Install dependencies
+        run: npm install @actions/github @actions/core
+      
+      - name: Run update script
+        run: node .github/scripts/update-issues.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+      
+      - name: Commit and push changes
+        run: |
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+          git add README.md
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update issues list in README" && git push)

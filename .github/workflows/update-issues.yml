@@ -3,6 +3,9 @@ name: Update README with Issues
 on:
   issues:
     types: [opened, closed, reopened]
+  push:
+    paths:
+      - '.github/scripts/**'
 
 permissions:
   contents: write
